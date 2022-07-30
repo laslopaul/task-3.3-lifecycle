@@ -1,0 +1,54 @@
+default:
+  tags:
+    - gitlab-runner
+
+services:
+  - docker:dind
+
+variables:
+  - IMAGE_TAG: "laslopaul/appsvc-django"
+  - DOCKER_USER: $DOCKER_USER
+  - DOCKER_PASSWD: $DOCKER_PASSWD
+  - ARM_CLIENT_ID: $ARM_CLIENT_ID
+  - ARM_CLIENT_SECRET: $ARM_CLIENT_SECRET
+  - ARM_TENANT_ID: $ARM_TENANT_ID
+  - APP_NAME: "laslopaul-gitlab-test"
+  - RES_GROUP: "gitlab"
+
+stages:
+  - format-lint
+  - build
+  - deploy
+
+format-lint:
+  stage: format-lint
+  image: python:3.6-slim-bullseye
+  allow_failure: true
+  before_script:
+    - apt-get update
+    - apt-get install -y python3-pip
+    - pip install -r requirements.txt
+    - pip install black flake8
+  script:
+    - black -l 79 django-app/
+    - flake8 django-app/
+
+docker-build:
+  stage: build
+  image: docker:20.10
+  before_script:
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWD"
+  script:
+    - cd ./django-app
+    - docker build --tag "$IMAGE_TAG" --tag "$CI_JOB_ID" --tag latest .
+    - docker push "$IMAGE_TAG:latest"
+
+azure-deploy:
+  stage: deploy
+  image: bitnami/azure-cli:2.38.0
+  before_script:
+    - az login --service-principal \
+      -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+  script:
+    - az webapp config container set -n "$APP_NAME" \
+      -g "$RES_GROUP" --docker-custom-image-name "$IMAGE_TAG:latest"
