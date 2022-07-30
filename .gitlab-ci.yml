@@ -6,14 +6,22 @@ services:
   - docker:dind
 
 variables:
-  - IMAGE_TAG: "laslopaul/appsvc-django"
-  - DOCKER_USER: $DOCKER_USER
-  - DOCKER_PASSWD: $DOCKER_PASSWD
-  - ARM_CLIENT_ID: $ARM_CLIENT_ID
-  - ARM_CLIENT_SECRET: $ARM_CLIENT_SECRET
-  - ARM_TENANT_ID: $ARM_TENANT_ID
-  - APP_NAME: "laslopaul-gitlab-test"
-  - RES_GROUP: "gitlab"
+  IMAGE_TAG:
+    value: laslopaul/appsvc-django
+  DOCKER_USER:
+    value: $DOCKER_USER
+  DOCKER_PASSWD:
+    value: $DOCKER_PASSWD
+  ARM_CLIENT_ID:
+    value: $ARM_CLIENT_ID
+  ARM_CLIENT_SECRET:
+    value: $ARM_CLIENT_SECRET
+  ARM_TENANT_ID:
+    value: $ARM_TENANT_ID
+  APP_NAME:
+    value: laslopaul-gitlab-test
+  RES_GROUP:
+    value: gitlab
 
 stages:
   - format-lint
