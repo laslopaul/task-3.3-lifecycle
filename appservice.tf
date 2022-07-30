@@ -1,6 +1,8 @@
 # Create App Service Plan
 resource "azurerm_app_service_plan" "default" {
-  name                = "asp-task413-itra"
+  name                = "asp-gitlab-itra"
+  kind                = "Linux"
+  reserved            = true
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
