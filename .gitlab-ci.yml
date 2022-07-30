@@ -27,12 +27,11 @@ stages:
 
 format-lint:
   stage: format-lint
-  image: python:3.6-slim-bullseye
   allow_failure: true
   before_script:
-    - apt-get update
-    - apt-get install -y python3-pip
-    - pip install -r requirements.txt
+    - virtualenv venv
+    - source venv/bin/activate
+    - pip install -r django-app/requirements.txt
     - pip install black flake8
   script:
     - black -l 79 django-app/
@@ -50,8 +49,6 @@ docker-build:
 azure-deploy:
   stage: deploy
   before_script:
-    - az login --service-principal \
-      -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+    - az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
   script:
-    - az webapp config container set -n "$APP_NAME" \
-      -g "$RES_GROUP" --docker-custom-image-name "$IMAGE_TAG:latest"
+    - az webapp config container set -n "$APP_NAME" -g "$RES_GROUP" --docker-custom-image-name "$IMAGE_TAG:latest"
