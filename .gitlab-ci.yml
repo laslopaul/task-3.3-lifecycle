@@ -1,9 +1,6 @@
 default:
   tags:
-    - gitlab-runner
-
-services:
-  - docker:dind
+    - local-runner
 
 variables:
   IMAGE_TAG:
@@ -43,7 +40,6 @@ format-lint:
 
 docker-build:
   stage: build
-  image: docker:20.10
   before_script:
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWD"
   script:
@@ -53,7 +49,6 @@ docker-build:
 
 azure-deploy:
   stage: deploy
-  image: bitnami/azure-cli:2.38.0
   before_script:
     - az login --service-principal \
       -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
