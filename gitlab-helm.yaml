@@ -5,6 +5,8 @@
 # - all pods start with a single replica, rather than their other highly available defaults
 # - resource requests are tuned down to the minimal requirements for a single user to fully use GitLab
 # - prometheus, gitlab ci runner, and the gitlab toolbox (used for backups and maintenance) are disabled
+certmanager:
+  install: false
 prometheus:
   install: false
 gitlab-runner:
@@ -32,6 +34,8 @@ global:
   rails:
     bootsnap:
       enabled: false
+  ingress:
+    configureCertmanager: false
 # Reduce replica counts, reducing CPU & memory requirements
 gitlab:
   webservice:
@@ -64,8 +68,3 @@ gitlab:
 registry:
   hpa:
     minReplicas: 1
-certmanager:
-  resources:
-    requests:
-      cpu: 10m
-      memory: 32Mi
